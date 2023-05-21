@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Funding by College</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/self.css">
+    <script src="../js/axios-0.18.0.js"></script>
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-table :data="fundingList"
+              :default-sort="{ prop: 'fundingAmount', order: 'descending' }"
+              style="width: 100%">
+        <el-table-column label="学院" align="center" >
+            <template slot-scope="scope">
+                {{ scope.row.college ? statusData[(scope.row.college)].label : '0' }}
+            </template>
+        </el-table-column>
+        <el-table-column prop="fundingAmount" label="经费到账总金额" align="center" sortable :sort-method="sortFundingAmount"></el-table-column>
+    </el-table>
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            fundingList: [],
+            statusData: {
+                '0': {
+                    label: '建筑学院'
+                },
+                '1': {
+                    label: '经济管理学院'
+                },
+                '2': {
+                    label: '土木工程学院'
+                },
+                '3': {
+                    label: '马克思主义学院'
+                },
+                '4': {
+                    label: '政法学院'
+                },
+                '5': {
+                    label: '教育学院'
+                },
+                '6': {
+                    label: '体育学院'
+                },
+                '7': {
+                    label: '文学与传媒学院'
+                },
+                '8': {
+                    label: '计算机工程学院'
+                },
+                '9': {
+                    label: '物理与电子工程学院'
+                },
+                '10': {
+                    label: '美术学院'
+                },
+                '11': {
+                    label: '音乐与舞蹈学院'
+                },
+                '12': {
+                    label: '外国语学院'
+                },
+            },
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                axios.get("/admin/getByXy").then((res) => {
+                    this.fundingList = res.data.data;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

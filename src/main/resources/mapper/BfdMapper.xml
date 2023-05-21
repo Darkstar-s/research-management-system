@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.BfdMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Bfd">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="pjNumber" column="pj_number" jdbcType="VARCHAR"/>
+            <result property="bfdPicture" column="bfd_picture" jdbcType="VARCHAR"/>
+            <result property="pjBalance" column="pj_balance" jdbcType="VARCHAR"/>
+            <result property="pjBk" column="pj_bk" jdbcType="VARCHAR"/>
+            <result property="adminStatus" column="admin_status" jdbcType="CHAR"/>
+            <result property="bkStatus" column="bk_status" jdbcType="CHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pj_number,bfd_picture,
+        pj_balance,pj_bk,admin_status,
+        bk_status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_bfd
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+    <select id="selectByNumber" resultMap="BaseResultMap">
+        select *
+        from tb_bfd
+        where pj_number = #{pjNumber,jdbcType=VARCHAR};
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_bfd;
+    </select>
+    <select id="selectByUserid" resultMap="BaseResultMap">
+        SELECT bfd.*
+        FROM tb_bfd bfd
+                 JOIN tb_pj pj ON bfd.pj_number = pj.pj_number
+                 JOIN tb_user u ON pj.pj_userid = u.user_id
+        WHERE u.user_id = #{userId}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_bfd
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zc.domain.Bfd" useGeneratedKeys="true">
+        insert into tb_bfd
+        ( id,pj_number,bfd_picture
+        ,pj_balance,pj_bk,admin_status
+        ,bk_status)
+        values (#{id,jdbcType=INTEGER},#{pjNumber,jdbcType=VARCHAR},#{bfdPicture,jdbcType=VARCHAR}
+        ,#{pjBalance,jdbcType=VARCHAR},#{pjBk,jdbcType=VARCHAR},#{adminStatus,jdbcType=CHAR}
+        ,#{bkStatus,jdbcType=CHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.zc.domain.Bfd" useGeneratedKeys="true">
+        insert into tb_bfd
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="pjNumber != null">pj_number,</if>
+                <if test="bfdPicture != null">bfd_picture,</if>
+                <if test="pjBalance != null">pj_balance,</if>
+                <if test="pjBk != null">pj_bk,</if>
+                <if test="adminStatus != null">admin_status,</if>
+                <if test="bkStatus != null">bk_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="pjNumber != null">#{pjNumber,jdbcType=VARCHAR},</if>
+                <if test="bfdPicture != null">#{bfdPicture,jdbcType=VARCHAR},</if>
+                <if test="pjBalance != null">#{pjBalance,jdbcType=VARCHAR},</if>
+                <if test="pjBk != null">#{pjBk,jdbcType=VARCHAR},</if>
+                <if test="adminStatus != null">#{adminStatus,jdbcType=CHAR},</if>
+                <if test="bkStatus != null">#{bkStatus,jdbcType=CHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Bfd">
+        update tb_bfd
+        <set>
+                <if test="pjNumber != null">
+                    pj_number = #{pjNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="bfdPicture != null">
+                    bfd_picture = #{bfdPicture,jdbcType=VARCHAR},
+                </if>
+                <if test="pjBalance != null">
+                    pj_balance = #{pjBalance,jdbcType=VARCHAR},
+                </if>
+                <if test="pjBk != null">
+                    pj_bk = #{pjBk,jdbcType=VARCHAR},
+                </if>
+                <if test="adminStatus != null">
+                    admin_status = #{adminStatus,jdbcType=CHAR},
+                </if>
+                <if test="bkStatus != null">
+                    bk_status = #{bkStatus,jdbcType=CHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Bfd">
+        update tb_bfd
+        set 
+            pj_number =  #{pjNumber,jdbcType=VARCHAR},
+            bfd_picture =  #{bfdPicture,jdbcType=VARCHAR},
+            pj_balance =  #{pjBalance,jdbcType=VARCHAR},
+            pj_bk =  #{pjBk,jdbcType=VARCHAR},
+            admin_status =  #{adminStatus,jdbcType=CHAR},
+            bk_status =  #{bkStatus,jdbcType=CHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>

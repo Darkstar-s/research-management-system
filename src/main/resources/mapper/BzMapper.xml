@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.BzMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Bz">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="pjName" column="pj_name" jdbcType="VARCHAR"/>
+            <result property="bzTime" column="bz_time" jdbcType="TIMESTAMP"/>
+            <result property="pjYw" column="pj_yw" jdbcType="VARCHAR"/>
+            <result property="pjSb" column="pj_sb" jdbcType="VARCHAR"/>
+            <result property="pjJd" column="pj_jd" jdbcType="VARCHAR"/>
+            <result property="pjCar" column="pj_car" jdbcType="VARCHAR"/>
+            <result property="pjWx" column="pj_wx" jdbcType="VARCHAR"/>
+            <result property="pjPeople" column="pj_people" jdbcType="VARCHAR"/>
+            <result property="pjManage" column="pj_manage" jdbcType="VARCHAR"/>
+            <result property="pjMoney" column="pj_money" jdbcType="VARCHAR"/>
+            <result property="bzStatus" column="bz_status" jdbcType="CHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pj_name,bz_time,
+        pj_yw,pj_sb,pj_jd,
+        pj_car,pj_wx,pj_people,
+        pj_manage,pj_money,bz_status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_bz
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+    <select id="selectByName" resultMap="BaseResultMap">
+        select *
+        from tb_bz
+        where pj_name = #{pjName,jdbcType=VARCHAR};
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_bz;
+    </select>
+    <select id="selectByUserid" resultMap="BaseResultMap">
+        SELECT bz.*
+        FROM tb_bz bz
+                 JOIN tb_pj pj ON bz.pj_name = pj.pj_number
+                 JOIN tb_user u ON pj.pj_userid = u.user_id
+        WHERE u.user_id = #{userId}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_bz
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zc.domain.Bz" useGeneratedKeys="true">
+        insert into tb_bz
+        ( id,pj_name,bz_time
+        ,pj_yw,pj_sb,pj_jd
+        ,pj_car,pj_wx,pj_people
+        ,pj_manage,pj_money,bz_status
+        )
+        values (#{id,jdbcType=INTEGER},#{pjName,jdbcType=VARCHAR},#{bzTime,jdbcType=TIMESTAMP}
+        ,#{pjYw,jdbcType=VARCHAR},#{pjSb,jdbcType=VARCHAR},#{pjJd,jdbcType=VARCHAR}
+        ,#{pjCar,jdbcType=VARCHAR},#{pjWx,jdbcType=VARCHAR},#{pjPeople,jdbcType=VARCHAR}
+        ,#{pjManage,jdbcType=VARCHAR},#{pjMoney,jdbcType=VARCHAR},#{bzStatus,jdbcType=CHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.zc.domain.Bz" useGeneratedKeys="true">
+        insert into tb_bz
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="pjName != null">pj_name,</if>
+                <if test="bzTime != null">bz_time,</if>
+                <if test="pjYw != null">pj_yw,</if>
+                <if test="pjSb != null">pj_sb,</if>
+                <if test="pjJd != null">pj_jd,</if>
+                <if test="pjCar != null">pj_car,</if>
+                <if test="pjWx != null">pj_wx,</if>
+                <if test="pjPeople != null">pj_people,</if>
+                <if test="pjManage != null">pj_manage,</if>
+                <if test="pjMoney != null">pj_money,</if>
+                <if test="bzStatus != null">bz_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="pjName != null">#{pjName,jdbcType=VARCHAR},</if>
+                <if test="bzTime != null">#{bzTime,jdbcType=TIMESTAMP},</if>
+                <if test="pjYw != null">#{pjYw,jdbcType=VARCHAR},</if>
+                <if test="pjSb != null">#{pjSb,jdbcType=VARCHAR},</if>
+                <if test="pjJd != null">#{pjJd,jdbcType=VARCHAR},</if>
+                <if test="pjCar != null">#{pjCar,jdbcType=VARCHAR},</if>
+                <if test="pjWx != null">#{pjWx,jdbcType=VARCHAR},</if>
+                <if test="pjPeople != null">#{pjPeople,jdbcType=VARCHAR},</if>
+                <if test="pjManage != null">#{pjManage,jdbcType=VARCHAR},</if>
+                <if test="pjMoney != null">#{pjMoney,jdbcType=VARCHAR},</if>
+                <if test="bzStatus != null">#{bzStatus,jdbcType=CHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Bz">
+        update tb_bz
+        <set>
+                <if test="pjName != null">
+                    pj_name = #{pjName,jdbcType=VARCHAR},
+                </if>
+                <if test="bzTime != null">
+                    bz_time = #{bzTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="pjYw != null">
+                    pj_yw = #{pjYw,jdbcType=VARCHAR},
+                </if>
+                <if test="pjSb != null">
+                    pj_sb = #{pjSb,jdbcType=VARCHAR},
+                </if>
+                <if test="pjJd != null">
+                    pj_jd = #{pjJd,jdbcType=VARCHAR},
+                </if>
+                <if test="pjCar != null">
+                    pj_car = #{pjCar,jdbcType=VARCHAR},
+                </if>
+                <if test="pjWx != null">
+                    pj_wx = #{pjWx,jdbcType=VARCHAR},
+                </if>
+                <if test="pjPeople != null">
+                    pj_people = #{pjPeople,jdbcType=VARCHAR},
+                </if>
+                <if test="pjManage != null">
+                    pj_manage = #{pjManage,jdbcType=VARCHAR},
+                </if>
+                <if test="pjMoney != null">
+                    pj_money = #{pjMoney,jdbcType=VARCHAR},
+                </if>
+                <if test="bzStatus != null">
+                    bz_status = #{bzStatus,jdbcType=CHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Bz">
+        update tb_bz
+        set 
+            pj_name =  #{pjName,jdbcType=VARCHAR},
+            bz_time =  #{bzTime,jdbcType=TIMESTAMP},
+            pj_yw =  #{pjYw,jdbcType=VARCHAR},
+            pj_sb =  #{pjSb,jdbcType=VARCHAR},
+            pj_jd =  #{pjJd,jdbcType=VARCHAR},
+            pj_car =  #{pjCar,jdbcType=VARCHAR},
+            pj_wx =  #{pjWx,jdbcType=VARCHAR},
+            pj_people =  #{pjPeople,jdbcType=VARCHAR},
+            pj_manage =  #{pjManage,jdbcType=VARCHAR},
+            pj_money =  #{pjMoney,jdbcType=VARCHAR},
+            bz_status =  #{bzStatus,jdbcType=CHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>

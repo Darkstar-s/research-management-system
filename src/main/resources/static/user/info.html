@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>用户信息</title>
+    <!-- 引入 Element UI 的样式文件 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link href="../css/self.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <el-card shadow="hover">
+        <div slot="header">
+            用户信息
+        </div>
+        <div>
+            <p>用户ID：{{user.userId}}</p>
+            <p>用户名：{{user.userName}}</p>
+            <p>用户性别：{{sexMap[user.userSex]}}</p>
+            <p>用户职称：{{zcMap[user.userZc]}}</p>
+            <p>用户学院：{{xyMap[user.userXy]}}</p>
+            <p>用户电话：{{user.userPhone}}</p>
+        </div>
+    </el-card>
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+<script src="../js/axios-0.18.0.js"></script>
+<!-- 引入 Vue.js 和 Element UI 的脚本文件 -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            user: {},
+            sexMap: {
+                0: '男',
+                1: '女'
+            },
+            zcMap: {
+                0: '助教',
+                1: '讲师',
+                2: '副教授',
+                3: '教授'
+            },
+            xyMap: {
+                0: '建筑学院',
+                1: '经济管理学院',
+                2: '土木工程学院',
+                3: '马克思主义学院',
+                4: '政法学院',
+                5: '教育学院',
+                6: '体育学院',
+                7: '文学与传媒学院',
+                8: '计算机工程学院',
+                9: '物理与电子工程学院',
+                10: '美术学院',
+                11: '音乐与舞蹈学院',
+                12: '外国语学院'
+            },
+        },
+
+        created() {
+            // 发送请求获取用户信息
+            this.getUserInfo()
+        },
+
+        methods: {
+            getUserInfo() {
+                // 这里使用 axios 发送请求，获取用户信息
+                axios.get("/getMyself").then((res) => {
+                    // 将获取到的用户信息赋值给 data 中的 user
+                    this.user = res.data.data;
+                }).catch(err => {
+                    console.error(err)
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

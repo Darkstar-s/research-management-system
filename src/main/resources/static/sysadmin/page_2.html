@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <!-- 页面meta -->
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>项目立项</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/self.css">
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>项目立项</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+                <el-input v-model="searchName" placeholder="请输入项目名称" style="width: 200px;"></el-input>
+                <el-button type="primary" @click="search">搜索</el-button>
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+
+                <el-table-column prop="pjId" label="项目ID" align="center" v-if="false"></el-table-column>
+                <el-table-column prop="pjNumber" label="项目编号" align="center" width="220"></el-table-column>
+                <el-table-column prop="pjName" label="项目名称" align="center"></el-table-column>
+                <el-table-column label="项目类型" align="center" width="200">
+                    <template slot-scope="scope">
+                        {{ scope.row.pjType ? status1Data[(scope.row.pjType)].label : '技术开发（委托）' }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="结题状态" align="center" width="140">
+                    <template slot-scope="scope">
+                        {{ scope.row.pjJtstatus ? statusData[(scope.row.pjJtstatus)].label : '待申请' }}
+                    </template>
+                </el-table-column>
+
+
+                <el-table-column label="操作" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+                        <el-button type="warning" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+
+            </el-table>
+
+            <el-dialog title="详情" :visible.sync="dialogVisible" width="50%">
+                <el-form :model="detailForm" label-width="120px" ref="detailForm">
+                    <el-form-item label="项目编号">
+                        <el-input v-model="detailForm.pjNumber"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目名称">
+                        <el-input v-model="detailForm.pjName"></el-input>
+                    </el-form-item>
+                    <!--<el-form-item label="项目类型">
+                        <template slot-scope="scope">
+                            {{ scope.row.pjType ? status1Data[(scope.row.pjType)].label : '技术开发（委托）' }}
+                        </template>
+                    </el-form-item>-->
+
+                    <el-form-item label="项目类型">
+                        <el-input v-model="detailForm.pjType"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目合同金额">
+                        <el-input v-model="detailForm.pjMoney"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目合同">
+                        <el-input v-model="detailForm.pjXmht"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目负责人ID">
+                        <el-input v-model="detailForm.pjUserid"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目负责人">
+                        <el-input v-model="detailForm.pjUser"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目参与人">
+                        <el-input v-model="detailForm.pjUsers"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目到账金额">
+                        <el-input v-model="detailForm.pjDzmoney"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目单位">
+                        <el-input v-model="detailForm.pjXmdw"></el-input>
+                    </el-form-item>
+                    <el-form-item label="合作单位">
+                        <el-input v-model="detailForm.pjHzdw"></el-input>
+                    </el-form-item>
+                    <el-form-item label="补充合同">
+                        <el-input v-model="detailForm.pjBcht"></el-input>
+                    </el-form-item>
+                    <el-form-item label="补充合同审核状态">
+                        <el-input v-model="detailForm.pjBcstatus"></el-input>
+                    </el-form-item>
+                 <!--   <el-form-item label="补充合同审核状态">
+                        {{ pjBcstatusList[detailForm.pjBcstatus] }}
+                    </el-form-item>-->
+                   <!-- <el-col :span="12">
+                        <el-form-item label="补充合同审核状态">
+                            <el-select v-model="formData.pjBcstatus" placeholder="下拉选择操作">
+                                <el-option label="待审核" value="0"/>
+                                <el-option label="审核通过" value="1"/>
+                                <el-option label="打回修改" value="2"/>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>-->
+
+                    <el-form-item label="开始时间">
+                        <el-date-picker v-model="detailForm.pjStime" type="datetime"
+                                        placeholder="请选择开始时间"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="结束时间">
+                        <el-date-picker v-model="detailForm.pjEtime" type="datetime"
+                                        placeholder="请选择结束时间"></el-date-picker>
+                    </el-form-item>
+
+                 <!--   <el-col :span="12">
+                        <el-form-item label="项目结题状态">
+                            <el-select v-model="formData.pjJtstatus" placeholder="下拉选择操作">
+                                <el-option label="待审核" value="0"/>
+                                <el-option label="审核通过" value="1"/>
+                                <el-option label="打回修改" value="2"/>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>-->
+                    <el-form-item label="项目结题状态">
+                        <el-input v-model="detailForm.pjJtstatus"></el-input>
+                    </el-form-item>
+                <!--    <el-form-item label="项目结题状态">
+                        {{ pjJtstatusList[detailForm.pjJtstatus] }}
+                    </el-form-item>-->
+                    <el-form-item label="项目结题时间">
+                        <el-date-picker v-model="detailForm.pjJtime" type="datetime"
+                                        placeholder="请选择结束时间"></el-date-picker>
+                    </el-form-item>
+                    <!--<el-form-item label="项目结题时间">
+                        <el-input v-model="detailForm.pjJtime"></el-input>
+                    </el-form-item>-->
+                    <el-form-item label="备注">
+                        <el-input v-model="detailForm.pjRemark"></el-input>
+                    </el-form-item>
+                    <el-form-item label="结题证明">
+                        <el-input v-model="detailForm.pjJtzm"></el-input>
+                    </el-form-item>
+                    <el-form-item label="结题报告">
+                        <el-input v-model="detailForm.pjJtbg"></el-input>
+                    </el-form-item>
+                    <el-form-item label="成果材料">
+                        <el-input v-model="detailForm.pjCgcl"></el-input>
+                    </el-form-item>
+                </el-form>
+
+                <div slot="footer" class="dialog-footer">
+
+                    <el-button @click="dialogVisible = false">取消</el-button>
+
+                    <el-button type="primary" @click="handleEdit()">确定</el-button>
+
+                </div>
+            </el-dialog>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</footer>
+</body>
+
+<!-- 引入组件库 -->
+
+<script src="../js/axios-0.18.0.js"></script>
+
+<!-- 引入 Vue.js 和 Element UI 的脚本文件 -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            dataList: [],//当前页要展示的列表数据
+            detailForm: {},
+            dialogVisible: false,
+            searchName: '',
+            statusData: {
+                '0': {
+                    label: '待申请'
+                },
+                '1': {
+                    label: '审核中'
+                },
+                '2': {
+                    label: '审核通过'
+                },
+                '3': {
+                    label: '打回修改'
+                }
+            },
+
+            status1Data: {
+                '0': {
+                    label: '技术开发（委托）'
+                },
+                '1': {
+                    label: '技术开发（合作）'
+                },
+                '2': {
+                    label: '技术服务'
+                },
+                '3': {
+                    label: '技术咨询'
+                },
+                '4': {
+                    label: '技术转让（专利权）'
+                },
+                '5': {
+                    label: '技术转让（专利实施许可）'
+                },
+                '6': {
+                    label: '技术转让（专利申请权）'
+                },
+                '7': {
+                    label: '技术服务（技术秘密）'
+                }
+            },
+
+            pjJtstatusList: ['待申请', '审核中', '审核通过', '打回修改'],
+            pjBcstatusList: ['待审核', '审核通过', '打回修改']
+
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+            //列表
+            getAll() {
+                axios.get("/admin/getAllLx").then((res) => {
+                    this.dataList = res.data.data;
+                });
+            },
+
+
+            formatTime(row) {
+                const stime = new Date(row.pjStime).toLocaleString('zh-CN', {hour12: false});
+                const etime = new Date(row.pjEtime).toLocaleString('zh-CN', {hour12: false});
+                const pjJtime = new Date(row.pjEtime).toLocaleString('zh-CN', {hour12: false});
+                return `${stime} - ${etime} - ${pjJtime}`;
+            },
+
+            search() {
+                axios.get("/admin/getPjByNameSh", {
+                    params: {
+                        searchName: this.searchName
+                    }
+                }).then((res) => {
+                    this.dataList = res.data.data;
+                })
+            },
+
+            /*详情表单*/
+            handleUpdate(row) {
+                axios.get("/getOneProject/" + row.pjId).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                        this.detailForm = res.data.data;
+                        this.dialogVisible = true;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+
+            //编辑
+            handleEdit() {
+                axios.put("/admin/update", this.detailForm).then((res) => {
+                    //如果操作成功，关闭弹层，显示数据
+                    if (res.data.code === 20031) {
+                        this.dialogVisible = false;
+                        this.$message.success("修改成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("修改失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+
+            },
+
+            handleDelete(row) {
+                this.$confirm("此操作永久删除当前数据，是否继续？", "提示", {
+                    type: 'info'
+                }).then(() => {
+                    //2.做删除业务
+                    axios.delete("/sysadmin/deletePj/" + row.pjId).then((res) => {
+                        if (res.data.code === 20021) {
+                            this.$message.success("删除成功");
+                        } else if (res.data.code === 20022) {
+                            this.$message.error("删除失败");
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    }).finally(() => {
+                        this.getAll();
+                    });
+                }).catch(() => {
+                    //3.取消删除
+                    this.$message.info("取消删除操作");
+                });
+            }
+        }
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <!-- 页面meta -->
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>项目立项</title>
+
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+
+    <!-- 引入样式 -->
+
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 引入 layui.css -->
+    <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+    <link href="../css/self.css" rel="stylesheet">
+
+    <!--    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />-->
+
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>项目立项</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+                <el-input placeholder="搜索" v-model="pagination.queryString" style="width: 200px;"
+                          class="filter-item"></el-input>
+                <el-button @click="getAll()" class="dalfBut">查询</el-button>
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+
+                <el-table-column prop="pjId" label="项目ID" align="center" v-if="false"></el-table-column>
+                <el-table-column prop="pjNumber" label="项目编号" align="center"></el-table-column>
+                <el-table-column prop="pjName" label="项目名称" align="center"></el-table-column>
+                <el-table-column label="项目类型" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.pjType ? status1Data[(scope.row.pjType)].label : '技术开发（委托）' }}
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="操作" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="mini" @click="handleDetail(scope.row)">详情</el-button>
+                        <el-button type="primary" size="mini" @click="UpdateBcht(scope.row)">补充合同</el-button>
+                        <el-button type="danger" size="mini" @click="Application(scope.row)">申请结题</el-button>
+                    </template>
+                </el-table-column>
+
+            </el-table>
+
+            <el-dialog title="详情" :visible.sync="dialogVisible" width="50%">
+                <el-form :model="detailForm" label-width="120px" ref="detailForm">
+                    <el-form-item label="项目编号">
+                        <el-input v-model="detailForm.pjNumber" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目名称">
+                        <el-input v-model="detailForm.pjName" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目类型">
+                        <template slot-scope="scope">
+                            {{ scope.row.pjType ? status1Data[(scope.row.pjType)].label : '技术开发（委托）' }}
+                        </template>
+                    </el-form-item>
+                    <el-form-item label="项目合同金额">
+                        <el-input v-model="detailForm.pjMoney" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目合同">
+                        <el-input v-model="detailForm.pjXmht" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目负责人ID">
+                        <el-input v-model="detailForm.pjUserid" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目负责人">
+                        <el-input v-model="detailForm.pjUser" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目参与人">
+                        <el-input v-model="detailForm.pjUsers" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目到账金额">
+                        <el-input v-model="detailForm.pjDzmoney" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目单位">
+                        <el-input v-model="detailForm.pjXmdw" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="合作单位">
+                        <el-input v-model="detailForm.pjHzdw" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="补充合同">
+                        <el-input v-model="detailForm.pjBcht" disabled></el-input>
+                    </el-form-item>
+                    <!-- <el-form-item label="补充合同审核状态">
+                         <el-input v-model="detailForm.pjBcstatus" disabled></el-input>
+                     </el-form-item>-->
+                    <el-form-item label="补充合同审核状态" :disabled="true">
+                        {{ pjBcstatusList[detailForm.pjBcstatus] }}
+                    </el-form-item>
+                    <el-form-item label="项目开始时间">
+                        <el-input v-model="detailForm.pjStime" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目结束时间">
+                        <el-input v-model="detailForm.pjEtime" disabled></el-input>
+                    </el-form-item>
+                    <!--<el-form-item label="项目结题状态">
+                        <el-input v-model="detailForm.pjJtstatus" disabled></el-input>
+                    </el-form-item>-->
+
+                    <el-form-item label="项目结题状态" :disabled="true">
+                        {{ pjJtstatusList[detailForm.pjJtstatus] }}
+                    </el-form-item>
+
+                    <el-form-item label="项目结题时间">
+                        <el-input v-model="detailForm.pjJtime" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input v-model="detailForm.pjRemark" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="结题证明">
+                        <el-input v-model="detailForm.pjJtzm" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="结题报告">
+                        <el-input v-model="detailForm.pjJtbg" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="成果材料">
+                        <el-input v-model="detailForm.pjCgcl" disabled></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+
+            <!-- 新增标签弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="项目申报" :visible.sync="dialogFormVisible">
+
+                    <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+
+                        <el-row>
+                            <el-col>
+                                <el-form-item label="Label名称" prop="pjId" hidden>
+                                    <el-input :disabled="true" v-model="formData.pjId"></el-input>
+                                    <input type="hidden" name="pjId" v-model="formData.pjId">
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col>
+                                <el-form-item label="上传文件">
+                                    <el-upload
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-success="handleSuccess"
+                                            accept=".pdf"
+                                            :limit="1">
+
+                                        <el-button size="small" type="primary">选择文件</el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传PDF文件</div>
+                                    </el-upload>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleAdd()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+            <!--结题申请-->
+            <div class="add-form">
+
+                <el-dialog title="结题申请" :visible.sync="dialogFormVisible4Edit">
+
+                    <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="项目编号为：" prop="pjNumber">
+                                    <el-input v-model="formData.pjNumber" disabled></el-input>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="项目名称为：" prop="pjName">
+                                    <el-input v-model="formData.pjName" disabled></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col>
+                                <el-form-item label="上传证明文件">
+                                    <el-upload
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-success="handleSuccess1"
+                                            accept=".pdf"
+                                            :limit="1">
+                                        <el-button size="small" type="primary">选择文件</el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传PDF文件</div>
+                                    </el-upload>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col>
+                                <el-form-item label="上传申请报告">
+                                    <el-upload
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-success="handleSuccess2"
+                                            accept=".pdf"
+                                            :limit="1">
+                                        <el-button size="small" type="primary">选择文件</el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传PDF文件</div>
+                                    </el-upload>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col>
+                                <el-form-item label="上传成果材料">
+                                    <el-upload
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-success="handleSuccess3"
+                                            accept=".pdf"
+                                            :limit="1">
+                                        <el-button size="small" type="primary">选择文件</el-button>
+                                        <div slot="tip" class="el-upload__tip">只能上传PDF文件</div>
+                                    </el-upload>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="" prop="pjId">
+                                    <el-input v-model="formData.pjId" type="hidden"></el-input>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="" prop="pjJtstatus">
+                                    <el-input v-model="formData.pjJtstatus" type="hidden"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleEdit()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+</body>
+
+<!-- 引入组件库 -->
+
+<script src="../js/vue.js"></script>
+
+<script src="../plugins/elementui/index.js"></script>
+
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+
+<script src="../js/axios-0.18.0.js"></script>
+
+
+
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            pagination: {},
+            dataList: [],//当前页要展示的列表数据
+            detailForm: {},
+            formData: {},//表单数据
+            dialogFormVisible: false,//控制表单是否可见
+            dialogFormVisible4Edit: false,//编辑表单是否可见
+            dialogVisible: false,
+            /* rules: {//校验规则
+                 type: [{required: true, message: '项目类别为必填项', trigger: 'blur'}],
+                 name: [{required: true, message: '项目名称为必填项', trigger: 'blur'}]
+             }*/
+            statusData: {
+                '0': {
+                    label: '待审核'
+                },
+                '1': {
+                    label: '审核通过'
+                },
+                '2': {
+                    label: '打回修改'
+                }
+            },
+
+            status1Data: {
+                '0': {
+                    label: '技术开发（委托）'
+                },
+                '1': {
+                    label: '技术开发（合作）'
+                },
+                '2': {
+                    label: '技术服务'
+                },
+                '3': {
+                    label: '技术咨询'
+                },
+                '4': {
+                    label: '技术转让（专利权）'
+                },
+                '5': {
+                    label: '技术转让（专利实施许可）'
+                },
+                '6': {
+                    label: '技术转让（专利申请权）'
+                },
+                '7': {
+                    label: '技术服务（技术秘密）'
+                }
+            },
+            pjJtstatusList: ['待申请', '审核中', '审核通过', '打回修改'],
+            pjBcstatusList: ['待审核', '审核通过']
+
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+            //列表
+            getAll() {
+                axios.get("/getProject1").then((res) => {
+                    this.dataList = res.data.data;
+                });
+            },
+            /*详情表单*/
+            handleDetail(row) {
+                axios.get("/getOneProject/" + row.pjId).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                        this.detailForm = res.data.data;
+                        this.dialogVisible = true;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+            //上传
+            handlePreview(file) {
+                window.open(file.response.url)
+            },
+            handleSuccess(response, file, fileList) {
+                if (response.code === 0) {
+                    this.formData.pjBcht = response.url;
+                    this.$message.success("文件上传成功");
+                } else {
+                    this.$message.error("文件上传失败：" + response.msg);
+                }
+            },
+            handleSuccess1(response, file, fileList) {
+                if (response.code === 0) {
+                    this.formData.pjJtzm = response.url;
+                    this.$message.success("文件上传成功");
+                } else {
+                    this.$message.error("文件上传失败：" + response.msg);
+                }
+            },
+            handleSuccess2(response, file, fileList) {
+                if (response.code === 0) {
+                    this.formData.pjJtbg = response.url;
+                    this.$message.success("文件上传成功");
+                } else {
+                    this.$message.error("文件上传失败：" + response.msg);
+                }
+            },
+            handleSuccess3(response, file, fileList) {
+                if (response.code === 0) {
+                    this.formData.pjCgcl = response.url;
+                    this.$message.success("文件上传成功");
+                } else {
+                    this.$message.error("文件上传失败：" + response.msg);
+                }
+            },
+
+            UpdateBcht(row) {
+                axios.get("/getOneProject/" + row.pjId).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                        this.formData = res.data.data;
+                        this.dialogFormVisible = true;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+
+            //编辑
+            handleAdd() {
+                axios.put("/update1", this.formData).then((res) => {
+                    //如果操作成功，关闭弹层，显示数据
+                    if (res.data.code === 20031) {
+                        this.dialogFormVisible = false;
+                        this.$message.success("修改成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("修改失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+
+            },
+
+            Application(row) {
+                axios.get("/getOneProject1/" + row.pjId).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                            this.formData = res.data.data;
+                            this.formData.pjJtstatus = 1;
+                            this.dialogFormVisible4Edit = true;
+                    } else if (res.data.code === 1){
+                        this.$message.error(res.data.msg);
+                    }else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+            handleEdit() {
+                axios.put("/update2", this.formData).then((res) => {
+                    //如果操作成功，关闭弹层，显示数据
+                    if (res.data.code === 20031) {
+                        this.dialogFormVisible4Edit = false;
+                        this.$message.success("修改成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("修改失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+            }
+        }
+    })
+
+</script>
+
+</html>

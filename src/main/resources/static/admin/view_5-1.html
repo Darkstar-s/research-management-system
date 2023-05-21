@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>经费到账统计</title>
+    <link rel="stylesheet" href="../css/self.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <h1>经费到账统计</h1>
+    <div>
+        <el-input v-model="inputYear" placeholder="请输入年份" style="width: 200px;"></el-input>
+        <el-button type="primary" @click="filterData">筛选</el-button>
+    </div>
+
+    <el-table :data="filteredData"
+              :default-sort="{ prop: 'fundingAmount', order: 'descending' }"
+              style="width: 100%">
+        <el-table-column label="学院" align="center">
+            <template slot-scope="scope">
+                {{ scope.row.college ? statusData[(scope.row.college)].label : '0' }}
+            </template>
+        </el-table-column>
+        <el-table-column prop="year" label="年份" align="center"></el-table-column>
+        <el-table-column prop="fundingAmount" label="到账总金额" align="center"
+                         sortable :sort-method="sortFundingAmount"></el-table-column>
+    </el-table>
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+
+<script src="../js/axios-0.18.0.js"></script>
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            inputYear: '', // 用户输入的年份
+            // data: [],
+            filteredData: [], // 筛选后的数据
+            statusData: {
+                '0': {
+                    label: '建筑学院'
+                },
+                '1': {
+                    label: '经济管理学院'
+                },
+                '2': {
+                    label: '土木工程学院'
+                },
+                '3': {
+                    label: '马克思主义学院'
+                },
+                '4': {
+                    label: '政法学院'
+                },
+                '5': {
+                    label: '教育学院'
+                },
+                '6': {
+                    label: '体育学院'
+                },
+                '7': {
+                    label: '文学与传媒学院'
+                },
+                '8': {
+                    label: '计算机工程学院'
+                },
+                '9': {
+                    label: '物理与电子工程学院'
+                },
+                '10': {
+                    label: '美术学院'
+                },
+                '11': {
+                    label: '音乐与舞蹈学院'
+                },
+                '12': {
+                    label: '外国语学院'
+                },
+            },
+        },
+
+        created() {
+            this.fetchData();
+        },
+
+        methods: {
+
+            fetchData() {
+                axios.get("/admin/getByXy").then((res) => {
+                    this.filteredData = res.data.data;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            filterData() {
+                // 根据用户输入的年份进行筛选
+                this.filteredData = this.filteredData.filter(item => item.year === this.inputYear);
+            }
+        }
+    });
+</script>
+</body>
+</html>

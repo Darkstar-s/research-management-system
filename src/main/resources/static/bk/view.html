@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>项目查看</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/self.css">
+</head>
+<body>
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>立项项目</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+                <el-input v-model="searchName" placeholder="请输入项目编号" style="width: 200px;"></el-input>
+                <el-button type="primary" @click="search">搜索</el-button>
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+
+                <el-table-column prop="pjNumber" label="项目编号" align="center" width="220"></el-table-column>
+                <el-table-column prop="pjName" label="项目名称" align="center"></el-table-column>
+                <el-table-column prop="pjXmht" label="项目合同" align="center"></el-table-column>
+                <el-table-column prop="pjBcht" label="补充名称" align="center"></el-table-column>
+                <el-table-column label="项目类型" align="center" width="200">
+                    <template slot-scope="scope">
+                        {{ scope.row.pjType ? status1Data[(scope.row.pjType)].label : '技术开发（委托）' }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="结题状态" align="center" width="140">
+                    <template slot-scope="scope">
+                        {{ scope.row.pjJtstatus ? statusData[(scope.row.pjJtstatus)].label : '待申请' }}
+                    </template>
+                </el-table-column>
+
+            </el-table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</footer>
+</body>
+<script src="../js/axios-0.18.0.js"></script>
+
+<!-- 引入 Vue.js 和 Element UI 的脚本文件 -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            dataList: [],//当前页要展示的列表数据
+            searchName: '',
+            statusData: {
+                '0': {
+                    label: '待申请'
+                },
+                '1': {
+                    label: '审核中'
+                },
+                '2': {
+                    label: '审核通过'
+                },
+                '3': {
+                    label: '打回修改'
+                }
+            },
+
+            status1Data: {
+                '0': {
+                    label: '技术开发（委托）'
+                },
+                '1': {
+                    label: '技术开发（合作）'
+                },
+                '2': {
+                    label: '技术服务'
+                },
+                '3': {
+                    label: '技术咨询'
+                },
+                '4': {
+                    label: '技术转让（专利权）'
+                },
+                '5': {
+                    label: '技术转让（专利实施许可）'
+                },
+                '6': {
+                    label: '技术转让（专利申请权）'
+                },
+                '7': {
+                    label: '技术服务（技术秘密）'
+                }
+            },
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+            //列表
+            getAll() {
+                axios.get("/admin/getAllLx").then((res) => {
+                    this.dataList = res.data.data;
+                });
+            },
+
+
+            search() {
+                axios.get("/admin/getPjByNameSh", {
+                    params: {
+                        searchName: this.searchName
+                    }
+                }).then((res) => {
+                    this.dataList = res.data.data;
+                })
+            },
+
+
+
+        }
+    })
+
+</script>
+</html>

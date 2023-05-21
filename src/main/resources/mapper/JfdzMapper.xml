@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.JfdzMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Jfdz">
+            <id property="dzId" column="dz_id" jdbcType="INTEGER"/>
+            <result property="xmNumber" column="xm_number" jdbcType="VARCHAR"/>
+            <result property="dzPicture" column="dz_picture" jdbcType="VARCHAR"/>
+            <result property="dzTime" column="dz_time" jdbcType="TIMESTAMP"/>
+            <result property="dzMoney" column="dz_money" jdbcType="VARCHAR"/>
+            <result property="dzStatus" column="dz_status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        dz_id,xm_number,dz_picture,
+        dz_time,dz_money,dz_status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_jfdz
+        where  dz_id = #{dzId,jdbcType=INTEGER} 
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_jfdz;
+    </select>
+    <select id="selectByXmNumber" resultMap="BaseResultMap">
+        select *
+        from tb_jfdz
+        where xm_number = #{xmNumber,jdbcType=VARCHAR};
+    </select>
+    <select id="selectByUserid" resultMap="BaseResultMap">
+        SELECT jfdz.*
+        FROM tb_jfdz jfdz
+                 JOIN tb_pj pj ON jfdz.xm_number = pj.pj_number
+                 JOIN tb_user u ON pj.pj_userid = u.user_id
+        WHERE u.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_jfdz
+        where  dz_id = #{dzId,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="dz_id" keyProperty="dzId" parameterType="com.zc.domain.Jfdz" useGeneratedKeys="true">
+        insert into tb_jfdz
+        ( dz_id,xm_number,dz_picture
+        ,dz_time,dz_money,dz_status
+        )
+        values (#{dzId,jdbcType=INTEGER},#{xmNumber,jdbcType=VARCHAR},#{dzPicture,jdbcType=VARCHAR}
+        ,#{dzTime,jdbcType=TIMESTAMP},#{dzMoney,jdbcType=VARCHAR},#{dzStatus,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="dz_id" keyProperty="dzId" parameterType="com.zc.domain.Jfdz" useGeneratedKeys="true">
+        insert into tb_jfdz
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="dzId != null">dz_id,</if>
+                <if test="xmNumber != null">xm_number,</if>
+                <if test="dzPicture != null">dz_picture,</if>
+                <if test="dzTime != null">dz_time,</if>
+                <if test="dzMoney != null">dz_money,</if>
+                <if test="dzStatus != null">dz_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="dzId != null">#{dzId,jdbcType=INTEGER},</if>
+                <if test="xmNumber != null">#{xmNumber,jdbcType=VARCHAR},</if>
+                <if test="dzPicture != null">#{dzPicture,jdbcType=VARCHAR},</if>
+                <if test="dzTime != null">#{dzTime,jdbcType=TIMESTAMP},</if>
+                <if test="dzMoney != null">#{dzMoney,jdbcType=VARCHAR},</if>
+                <if test="dzStatus != null">#{dzStatus,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Jfdz">
+        update tb_jfdz
+        <set>
+                <if test="xmNumber != null">
+                    xm_number = #{xmNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="dzPicture != null">
+                    dz_picture = #{dzPicture,jdbcType=VARCHAR},
+                </if>
+                <if test="dzTime != null">
+                    dz_time = #{dzTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="dzMoney != null">
+                    dz_money = #{dzMoney,jdbcType=VARCHAR},
+                </if>
+                <if test="dzStatus != null">
+                    dz_status = #{dzStatus,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   dz_id = #{dzId,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Jfdz">
+        update tb_jfdz
+        set 
+            xm_number =  #{xmNumber,jdbcType=VARCHAR},
+            dz_picture =  #{dzPicture,jdbcType=VARCHAR},
+            dz_time =  #{dzTime,jdbcType=TIMESTAMP},
+            dz_money =  #{dzMoney,jdbcType=VARCHAR},
+            dz_status =  #{dzStatus,jdbcType=VARCHAR}
+        where   dz_id = #{dzId,jdbcType=INTEGER} 
+    </update>
+</mapper>

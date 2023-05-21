@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>修改密码</title>
+    <!-- 引入 Element UI 样式 -->
+    <link href="../css/self.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <el-form ref="form" :model="form" label-width="100px" label-width="80px" style="width: 500px;margin: 50px auto;">
+        <el-form-item label="原密码" prop="oldPassword">
+            <el-input v-model="form.oldPassword" show-password></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+            <el-input v-model="form.newPassword" show-password></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input v-model="form.confirmPassword" show-password></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="submitForm">修改密码</el-button>
+            <el-button @click="resetForm">重置</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+<script src="../js/axios-0.18.0.js"></script>
+<!-- 引入 Vue 和 Element UI 的 JS 文件 -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                form: {
+                    oldPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                },
+            };
+        },
+        methods: {
+            submitForm() {
+                // 在这里添加验证逻辑，例如检查原密码是否正确以及两次输入的新密码是否一致
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        if (this.form.newPassword !== this.form.confirmPassword) {
+                            this.$message.error('新密码和确认密码不一致');
+                            return;
+                        }
+                        axios.post("/bk/updatePwd", {
+                            oldPassword: this.form.oldPassword,
+                            newPassword: this.form.newPassword,
+                        }).then((res) => {
+                            if (res.data.code === 20031) {
+                                this.resetForm();
+                                this.$message.success('密码修改成功');
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm() {
+                this.$refs.form.resetFields();
+            },
+        },
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.PjMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Pj">
+        <id property="pjId" column="pj_id" jdbcType="INTEGER"/>
+        <id property="pjNumber" column="pj_number" jdbcType="VARCHAR"/>
+        <result property="pjName" column="pj_name" jdbcType="VARCHAR"/>
+        <result property="pjType" column="pj_type" jdbcType="CHAR"/>
+        <result property="pjMoney" column="pj_money" jdbcType="VARCHAR"/>
+        <result property="pjDzmoney" column="pj_dzmoney" jdbcType="VARCHAR"/>
+        <result property="pjUser" column="pj_user" jdbcType="VARCHAR"/>
+        <result property="pjUserid" column="pj_userid" jdbcType="VARCHAR"/>
+        <result property="pjUsers" column="pj_users" jdbcType="VARCHAR"/>
+        <result property="pjXmdw" column="pj_xmdw" jdbcType="VARCHAR"/>
+        <result property="pjHzdw" column="pj_hzdw" jdbcType="VARCHAR"/>
+        <result property="pjShstatus" column="pj_shstatus" jdbcType="VARCHAR"/>
+        <result property="pjJtstatus" column="pj_jtstatus" jdbcType="VARCHAR"/>
+        <result property="pjBcstatus" column="pj_bcstatus" jdbcType="VARCHAR"/>
+        <result property="pjXmht" column="pj_xmht" jdbcType="VARCHAR"/>
+        <result property="pjBcht" column="pj_bcht" jdbcType="VARCHAR"/>
+        <result property="pjStime" column="pj_stime" jdbcType="TIMESTAMP"/>
+        <result property="pjEtime" column="pj_etime" jdbcType="TIMESTAMP"/>
+        <result property="pjJtime" column="pj_jtime" jdbcType="TIMESTAMP"/>
+        <result property="pjRemark" column="pj_remark" jdbcType="VARCHAR"/>
+        <result property="pjJtzm" column="pj_jtzm" jdbcType="VARCHAR"/>
+        <result property="pjJtbg" column="pj_jtbg" jdbcType="VARCHAR"/>
+        <result property="pjCgcl" column="pj_cgcl" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        pj_id,pj_number,pj_name,
+        pj_type,pj_money,pj_dzmoney,
+        pj_user,pj_userid,pj_users,
+        pj_xmdw,pj_hzdw,pj_shstatus,
+        pj_jtstatus,pj_bcstatus,pj_xmht,
+        pj_bcht,pj_stime,pj_etime,
+        pj_jtime,pj_remark,pj_jtzm,
+        pj_jtbg,pj_cgcl
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_id = #{pjId,jdbcType=INTEGER}
+    </select>
+    <select id="selectByUserid" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_userid = #{pjUserid,jdbcType=VARCHAR};
+    </select>
+    <select id="selectByUseridAndSc" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_userid = #{pjUserid,jdbcType=VARCHAR}
+          and pj_shstatus = 1;
+    </select>
+    <select id="selectByPjNumber" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_number = #{pjNumber,jdbcType=VARCHAR};
+    </select>
+    <select id="selectByPjName" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_name like CONCAT('%', #{pjName,jdbcType=VARCHAR}, '%');
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_pj;
+    </select>
+    <select id="selectAllLx" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_shstatus = 1;
+    </select>
+    <select id="selectByPjNameSh" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_name like CONCAT('%', #{pjName,jdbcType=VARCHAR}, '%')
+          and pj_shstatus = 1;
+    </select>
+    <select id="selectByPjId" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+        where pj_id = #{pjId,jdbcType=INTEGER};
+    </select>
+    <select id="selectByXy" resultMap="BaseResultMap">
+        select *
+        from tb_pj
+                 join tb_user on tb_pj.pj_userid = tb_user.user_id
+        where tb_user.user_xy = #{userXy,jdbcType=INTEGER};
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from tb_pj
+        where pj_id = #{pjId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert">
+        insert into tb_pj
+        ( pj_id, pj_number, pj_name
+        , pj_type, pj_money, pj_dzmoney
+        , pj_user, pj_userid, pj_users
+        , pj_xmdw, pj_hzdw, pj_shstatus
+        , pj_jtstatus, pj_bcstatus, pj_xmht
+        , pj_bcht, pj_stime, pj_etime
+        , pj_jtime, pj_remark, pj_jtzm, pj_jtbg, pj_cgcl)
+        values ( #{pjId,jdbcType=INTEGER}, #{pjNumber,jdbcType=VARCHAR}, #{pjName,jdbcType=VARCHAR}
+               , #{pjType,jdbcType=CHAR}, #{pjMoney,jdbcType=VARCHAR}, #{pjDzmoney,jdbcType=VARCHAR}
+               , #{pjUser,jdbcType=VARCHAR}, #{pjUserid,jdbcType=VARCHAR}, #{pjUsers,jdbcType=VARCHAR}
+               , #{pjXmdw,jdbcType=VARCHAR}, #{pjHzdw,jdbcType=VARCHAR}, #{pjShstatus,jdbcType=VARCHAR}
+               , #{pjJtstatus,jdbcType=VARCHAR}, #{pjBcstatus,jdbcType=VARCHAR}, #{pjXmht,jdbcType=VARCHAR}
+               , #{pjBcht,jdbcType=VARCHAR}, #{pjStime,jdbcType=TIMESTAMP}, #{pjEtime,jdbcType=TIMESTAMP}
+               , #{pjJtime,jdbcType=TIMESTAMP}, #{pjRemark,jdbcType=VARCHAR},#{pjJtzm,jdbcType=VARCHAR}
+               ,#{pjJtbg,jdbcType=VARCHAR},#{pjCgcl,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective">
+        insert into tb_pj
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pjId != null">pj_id,</if>
+            <if test="pjNumber != null">pj_number,</if>
+            <if test="pjName != null">pj_name,</if>
+            <if test="pjType != null">pj_type,</if>
+            <if test="pjMoney != null">pj_money,</if>
+            <if test="pjDzmoney != null">pj_dzmoney,</if>
+            <if test="pjUser != null">pj_user,</if>
+            <if test="pjUserid != null">pj_userid,</if>
+            <if test="pjUsers != null">pj_users,</if>
+            <if test="pjXmdw != null">pj_xmdw,</if>
+            <if test="pjHzdw != null">pj_hzdw,</if>
+            <if test="pjShstatus != null">pj_shstatus,</if>
+            <if test="pjJtstatus != null">pj_jtstatus,</if>
+            <if test="pjBcstatus != null">pj_bcstatus,</if>
+            <if test="pjXmht != null">pj_xmht,</if>
+            <if test="pjBcht != null">pj_bcht,</if>
+            <if test="pjStime != null">pj_stime,</if>
+            <if test="pjEtime != null">pj_etime,</if>
+            <if test="pjJtime != null">pj_jtime,</if>
+            <if test="pjRemark != null">pj_remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pjId != null">#{pjId,jdbcType=INTEGER},</if>
+            <if test="pjNumber != null">#{pjNumber,jdbcType=VARCHAR},</if>
+            <if test="pjName != null">#{pjName,jdbcType=VARCHAR},</if>
+            <if test="pjType != null">#{pjType,jdbcType=CHAR},</if>
+            <if test="pjMoney != null">#{pjMoney,jdbcType=VARCHAR},</if>
+            <if test="pjDzmoney != null">#{pjDzmoney,jdbcType=VARCHAR},</if>
+            <if test="pjUser != null">#{pjUser,jdbcType=VARCHAR},</if>
+            <if test="pjUserid != null">#{pjUserid,jdbcType=VARCHAR},</if>
+            <if test="pjUsers != null">#{pjUsers,jdbcType=VARCHAR},</if>
+            <if test="pjXmdw != null">#{pjXmdw,jdbcType=VARCHAR},</if>
+            <if test="pjHzdw != null">#{pjHzdw,jdbcType=VARCHAR},</if>
+            <if test="pjShstatus != null">#{pjShstatus,jdbcType=VARCHAR},</if>
+            <if test="pjJtstatus != null">#{pjJtstatus,jdbcType=VARCHAR},</if>
+            <if test="pjBcstatus != null">#{pjBcstatus,jdbcType=VARCHAR},</if>
+            <if test="pjXmht != null">#{pjXmht,jdbcType=VARCHAR},</if>
+            <if test="pjBcht != null">#{pjBcht,jdbcType=VARCHAR},</if>
+            <if test="pjStime != null">#{pjStime,jdbcType=TIMESTAMP},</if>
+            <if test="pjEtime != null">#{pjEtime,jdbcType=TIMESTAMP},</if>
+            <if test="pjJtime != null">#{pjJtime,jdbcType=TIMESTAMP},</if>
+            <if test="pjRemark != null">#{pjRemark,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Pj">
+        update tb_pj
+        <set>
+            <if test="pjName != null">
+                pj_name = #{pjName,jdbcType=VARCHAR},
+            </if>
+            <if test="pjType != null">
+                pj_type = #{pjType,jdbcType=CHAR},
+            </if>
+            <if test="pjNumber != null">
+                pj_number = #{pjNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="pjMoney != null">
+                pj_money = #{pjMoney,jdbcType=VARCHAR},
+            </if>
+            <if test="pjDzmoney != null">
+                pj_dzmoney = #{pjDzmoney,jdbcType=VARCHAR},
+            </if>
+            <if test="pjUser != null">
+                pj_user = #{pjUser,jdbcType=VARCHAR},
+            </if>
+            <if test="pjUserid != null">
+                pj_userid = #{pjUserid,jdbcType=VARCHAR},
+            </if>
+            <if test="pjUsers != null">
+                pj_users = #{pjUsers,jdbcType=VARCHAR},
+            </if>
+            <if test="pjXmdw != null">
+                pj_xmdw = #{pjXmdw,jdbcType=VARCHAR},
+            </if>
+            <if test="pjHzdw != null">
+                pj_hzdw = #{pjHzdw,jdbcType=VARCHAR},
+            </if>
+            <if test="pjShstatus != null">
+                pj_shstatus = #{pjShstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="pjJtstatus != null">
+                pj_jtstatus = #{pjJtstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="pjBcstatus != null">
+                pj_bcstatus = #{pjBcstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="pjXmht != null">
+                pj_xmht = #{pjXmht,jdbcType=VARCHAR},
+            </if>
+            <if test="pjBcht != null">
+                pj_bcht = #{pjBcht,jdbcType=VARCHAR},
+            </if>
+            <if test="pjStime != null">
+                pj_stime = #{pjStime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pjEtime != null">
+                pj_etime = #{pjEtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pjJtime != null">
+                pj_jtime = #{pjJtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pjRemark != null">
+                pj_remark = #{pjRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="pjJtzm != null">
+                pj_jtzm = #{pjJtzm,jdbcType=VARCHAR},
+            </if>
+            <if test="pjJtbg != null">
+                pj_jtbg = #{pjJtbg,jdbcType=VARCHAR},
+            </if>
+            <if test="pjCgcl != null">
+                pj_cgcl = #{pjCgcl,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pj_id = #{pjId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Pj">
+        update tb_pj
+        set pj_name     = #{pjName,jdbcType=VARCHAR},
+            pj_type     = #{pjType,jdbcType=CHAR},
+            pj_money    = #{pjMoney,jdbcType=VARCHAR},
+            pj_dzmoney  = #{pjDzmoney,jdbcType=VARCHAR},
+            pj_user     = #{pjUser,jdbcType=VARCHAR},
+            pj_userid   = #{pjUserid,jdbcType=VARCHAR},
+            pj_users    = #{pjUsers,jdbcType=VARCHAR},
+            pj_xmdw     = #{pjXmdw,jdbcType=VARCHAR},
+            pj_hzdw     = #{pjHzdw,jdbcType=VARCHAR},
+            pj_shstatus = #{pjShstatus,jdbcType=VARCHAR},
+            pj_jtstatus = #{pjJtstatus,jdbcType=VARCHAR},
+            pj_bcstatus = #{pjBcstatus,jdbcType=VARCHAR},
+            pj_xmht     = #{pjXmht,jdbcType=VARCHAR},
+            pj_bcht     = #{pjBcht,jdbcType=VARCHAR},
+            pj_stime    = #{pjStime,jdbcType=TIMESTAMP},
+            pj_etime    = #{pjEtime,jdbcType=TIMESTAMP},
+            pj_jtime    = #{pjJtime,jdbcType=TIMESTAMP},
+            pj_remark   = #{pjRemark,jdbcType=VARCHAR}
+        where pj_id = #{pjId,jdbcType=INTEGER}
+    </update>
+</mapper>

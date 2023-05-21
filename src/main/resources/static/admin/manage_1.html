@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>用户管理</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/self.css">
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>用户管理</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+
+                <el-input v-model="searchName" placeholder="请输入姓名" style="width: 200px;"></el-input>
+                <el-button type="primary" @click="search">搜索</el-button>
+
+               <!-- <el-button type="primary" class="butT" @click="handleCreate()">添加</el-button>-->
+
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+                <el-table-column prop="userId" label="id"></el-table-column>
+                <el-table-column prop="userName" label="姓名"></el-table-column>
+                <el-table-column prop="userSex" label="性别">
+                    <template slot-scope="scope">
+                        {{ scope.row.userSex === "0" ? '男' : '女' }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="userZc" label="职称" :formatter="formatZc"></el-table-column>
+                <el-table-column prop="userXy" label="学院" :formatter="formatXy"></el-table-column>
+                <el-table-column prop="userPhone" label="电话"></el-table-column>
+                <!--<el-table-column prop="userPwd" label="密码"></el-table-column>
+
+                <el-table-column label="操作" align="center">
+
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+                        <el-button type="warning" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+
+                </el-table-column>
+-->
+            </el-table>
+
+            <!--添加项目-->
+            <div class="add-form">
+
+                <el-dialog title="项目申报" :visible.sync="dialogFormVisible">
+
+                    <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="用户名" prop="userName">
+                                    <el-input v-model="formData.userName"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="密码" prop="userPwd">
+                                    <el-input v-model="formData.userPwd"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="电话" prop="userPhone">
+                                    <el-input v-model="formData.userPhone"/>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="性别">
+                                    <el-radio-group v-model="formData.userSex">
+                                        <el-radio :label="0">男</el-radio>
+                                        <el-radio :label="1">女</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="职称">
+                                    <el-select v-model="formData.userZc" placeholder="请选择">
+                                        <el-option label="教授" value="3"></el-option>
+                                        <el-option label="副教授" value="2"></el-option>
+                                        <el-option label="讲师" value="1"></el-option>
+                                        <el-option label="助教" value="0"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="学院">
+                                    <el-select v-model="formData.userXy" placeholder="请选择">
+                                        <el-option label="建筑学院" value="0"></el-option>
+                                        <el-option label="经济管理学院" value="1"></el-option>
+                                        <el-option label="土木工程学院" value="2"></el-option>
+                                        <el-option label="马克思主义学院" value="3"></el-option>
+                                        <el-option label="政法学院" value="4"></el-option>
+                                        <el-option label="教育学院" value="5"></el-option>
+                                        <el-option label="体育学院" value="6"></el-option>
+                                        <el-option label="文学与传媒学院" value="7"></el-option>
+                                        <el-option label="计算机工程学院" value="8"></el-option>
+                                        <el-option label="物理与电子工程学院" value="9"></el-option>
+                                        <el-option label="美术学院" value="10"></el-option>
+                                        <el-option label="音乐与舞蹈学院" value="11"></el-option>
+                                        <el-option label="外国语学院" value="12"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleAdd()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+            <!-- 编辑标签弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="编辑检查项" :visible.sync="dialogFormVisible4Edit">
+
+                    <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="用户名" prop="userName">
+                                    <el-input v-model="formData.userName"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="密码" prop="userPwd">
+                                    <el-input v-model="formData.userPwd"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="电话" prop="userPhone">
+                                    <el-input v-model="formData.userPhone"/>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="性别">
+                                    <el-radio-group v-model="formData.userSex">
+                                        <el-radio label="0">男</el-radio>
+                                        <el-radio label="1">女</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="职称">
+                                    <el-select v-model="formData.userZc" placeholder="请选择">
+                                        <el-option label="教授" value="3"></el-option>
+                                        <el-option label="副教授" value="2"></el-option>
+                                        <el-option label="讲师" value="1"></el-option>
+                                        <el-option label="助教" value="0"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="学院">
+                                    <el-select v-model="formData.userXy" placeholder="请选择">
+                                        <el-option label="建筑学院" value="0"></el-option>
+                                        <el-option label="经济管理学院" value="1"></el-option>
+                                        <el-option label="土木工程学院" value="2"></el-option>
+                                        <el-option label="马克思主义学院" value="3"></el-option>
+                                        <el-option label="政法学院" value="4"></el-option>
+                                        <el-option label="教育学院" value="5"></el-option>
+                                        <el-option label="体育学院" value="6"></el-option>
+                                        <el-option label="文学与传媒学院" value="7"></el-option>
+                                        <el-option label="计算机工程学院" value="8"></el-option>
+                                        <el-option label="物理与电子工程学院" value="9"></el-option>
+                                        <el-option label="美术学院" value="10"></el-option>
+                                        <el-option label="音乐与舞蹈学院" value="11"></el-option>
+                                        <el-option label="外国语学院" value="12"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleEdit()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</footer>
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/axios-0.18.0.js"></script>
+
+<!-- 引入 Vue.js 和 Element UI 的脚本文件 -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            dataList: [],//当前页要展示的列表数据
+            searchName: '',
+            formData: {},
+            dialogFormVisible: false,
+            dialogFormVisible4Edit: false,
+
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+
+            formatZc(row) {
+                const zc = row.userZc;
+                switch (zc) {
+                    case '0':
+                        return '助教';
+                    case '1':
+                        return '讲师';
+                    case '2':
+                        return '副教授';
+                    case '3':
+                        return '教授';
+                    default:
+                        return '';
+                }
+            },
+            formatXy(row) {
+                const xy = row.userXy;
+                switch (xy) {
+                    case '0':
+                        return '建筑学院';
+                    case '1':
+                        return '经济管理学院';
+                    case '2':
+                        return '土木工程学院';
+                    case '3':
+                        return '马克思主义学院';
+                    case '4':
+                        return '政法学院';
+                    case '5':
+                        return '教育学院';
+                    case '6':
+                        return '体育学院';
+                    case '7':
+                        return '文学与传媒学院';
+                    case '8':
+                        return '计算机工程学院';
+                    case '9':
+                        return '物理与电子工程学院';
+                    case '10':
+                        return '美术学院';
+                    case '11':
+                        return '音乐与舞蹈学院';
+                    case '12':
+                        return '外国语学院';
+                    default:
+                        return '';
+                }
+            },
+
+
+            //列表
+            getAll() {
+                axios.get("/sysadmin/getAllUser").then((res) => {
+                    this.dataList = res.data.data;
+                });
+            },
+
+            search() {
+                axios.get("/sysadmin/getByUsername", {
+                    params: {
+                        searchName: this.searchName
+                    }
+                }).then((res) => {
+                    this.dataList = res.data.data;
+                })
+            },
+
+            //弹出添加窗口
+            handleCreate() {
+                this.dialogFormVisible = true;
+                this.resetForm();
+            },
+
+            //重置表单
+            resetForm() {
+                this.formData = {};
+            },
+
+            //添加
+            handleAdd() {
+                axios.post("/sysadmin/insertUser", this.formData).then((res) => {
+                    if (res.data.code === 20011) {
+                        this.dialogFormVisible = false;
+                        this.$message.success("添加成功");
+                    } else if (res.data.code === 20010) {
+                        this.$message.error("添加失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+            },
+
+            //弹出编辑窗口
+            handleUpdate(row) {
+                axios.get("/sysadmin/getUser/" + row.userId).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                        this.formData = res.data.data;
+                        this.dialogFormVisible4Edit = true;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+
+            //编辑
+            handleEdit() {
+                axios.put("/sysadmin/updateUser", this.formData).then((res) => {
+                    //如果操作成功，关闭弹层，显示数据
+                    if (res.data.code === 20031) {
+                        this.dialogFormVisible4Edit = false;
+                        this.$message.success("修改成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("修改失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+
+            },
+
+            // 删除
+            handleDelete(row) {
+                this.$confirm("此操作永久删除当前数据，是否继续？", "提示", {
+                    type: 'info'
+                }).then(() => {
+                    //2.做删除业务
+                    axios.delete("/sysadmin/deleteUser/" + row.userId).then((res) => {
+                        if (res.data.code === 20021) {
+                            this.$message.success("删除成功");
+                        } else if (res.data.code === 20022) {
+                            this.$message.error("删除失败");
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    }).finally(() => {
+                        this.getAll();
+                    });
+                }).catch(() => {
+                    //3.取消删除
+                    this.$message.info("取消删除操作");
+                });
+            }
+
+        }
+    })
+
+</script>
+
+</html>

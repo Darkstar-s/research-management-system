@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.AdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Admin">
+            <id property="adminId" column="admin_id" jdbcType="INTEGER"/>
+            <result property="adminName" column="admin_name" jdbcType="VARCHAR"/>
+            <result property="adminSex" column="admin_sex" jdbcType="CHAR"/>
+            <result property="adminPhone" column="admin_phone" jdbcType="VARCHAR"/>
+            <result property="adminPwd" column="admin_pwd" jdbcType="VARCHAR"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        admin_id,admin_name,admin_sex,
+        admin_phone,admin_pwd,role
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_admin
+        where  admin_id = #{adminId,jdbcType=INTEGER} 
+    </select>
+    <select id="LoginAdmin" resultMap="BaseResultMap">
+        select *
+        from tb_admin
+        where admin_id = #{adminId,jdbcType=INTEGER}
+          and admin_pwd = #{adminPwd,jdbcType=VARCHAR};
+    </select>
+    <select id="selectByAdminName" resultMap="BaseResultMap">
+        select *
+        from tb_admin
+        where admin_name like CONCAT('%', #{adminName,jdbcType=VARCHAR}, '%');
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_admin;
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_admin
+        where  admin_id = #{adminId,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="admin_id" keyProperty="adminId" parameterType="com.zc.domain.Admin" useGeneratedKeys="true">
+        insert into tb_admin
+        ( admin_id,admin_name,admin_sex
+        ,admin_phone,admin_pwd,role
+        )
+        values (#{adminId,jdbcType=INTEGER},#{adminName,jdbcType=VARCHAR},#{adminSex,jdbcType=CHAR}
+        ,#{adminPhone,jdbcType=VARCHAR},#{adminPwd,jdbcType=VARCHAR},#{role,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="admin_id" keyProperty="adminId" parameterType="com.zc.domain.Admin" useGeneratedKeys="true">
+        insert into tb_admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="adminId != null">admin_id,</if>
+                <if test="adminName != null">admin_name,</if>
+                <if test="adminSex != null">admin_sex,</if>
+                <if test="adminPhone != null">admin_phone,</if>
+                <if test="adminPwd != null">admin_pwd,</if>
+                <if test="role != null">role,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="adminId != null">#{adminId,jdbcType=INTEGER},</if>
+                <if test="adminName != null">#{adminName,jdbcType=VARCHAR},</if>
+                <if test="adminSex != null">#{adminSex,jdbcType=CHAR},</if>
+                <if test="adminPhone != null">#{adminPhone,jdbcType=VARCHAR},</if>
+                <if test="adminPwd != null">#{adminPwd,jdbcType=VARCHAR},</if>
+                <if test="role != null">#{role,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Admin">
+        update tb_admin
+        <set>
+                <if test="adminName != null">
+                    admin_name = #{adminName,jdbcType=VARCHAR},
+                </if>
+                <if test="adminSex != null">
+                    admin_sex = #{adminSex,jdbcType=CHAR},
+                </if>
+                <if test="adminPhone != null">
+                    admin_phone = #{adminPhone,jdbcType=VARCHAR},
+                </if>
+                <if test="adminPwd != null">
+                    admin_pwd = #{adminPwd,jdbcType=VARCHAR},
+                </if>
+                <if test="role != null">
+                    role = #{role,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   admin_id = #{adminId,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Admin">
+        update tb_admin
+        set 
+            admin_name =  #{adminName,jdbcType=VARCHAR},
+            admin_sex =  #{adminSex,jdbcType=CHAR},
+            admin_phone =  #{adminPhone,jdbcType=VARCHAR},
+            admin_pwd =  #{adminPwd,jdbcType=VARCHAR},
+            role =  #{role,jdbcType=VARCHAR}
+        where   admin_id = #{adminId,jdbcType=INTEGER} 
+    </update>
+</mapper>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <!-- 页面meta -->
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>经费报账</title>
+
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+
+    <!-- 引入样式 -->
+
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 引入 layui.css -->
+    <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+    <link href="../css/self.css" rel="stylesheet">
+
+    <!--    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />-->
+
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>经费报账</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+
+                <el-input v-model="searchName" placeholder="请输入项目编号" style="width: 200px;"></el-input>
+                <el-button type="primary" @click="search">搜索</el-button>
+
+                <el-button type="primary" class="butT" @click="handleCreate()">上传</el-button>
+
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+                <el-table-column label="序号" align="center" width="50px">
+                    <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="id" label="项目id" align="center" v-if="false"></el-table-column>
+                <el-table-column prop="pjName" label="项目编号" align="center"></el-table-column>
+                <el-table-column prop="bzTime" label="报帐时间" :formatter="formatTime"></el-table-column>
+                <el-table-column prop="pjYw" label="项目业务费" align="center"></el-table-column>
+                <el-table-column prop="pjSb" label="仪器设备费" align="center"></el-table-column>
+                <el-table-column prop="pjJd" label="业务接待费" align="center"></el-table-column>
+                <el-table-column prop="pjCar" label="车辆使用费" align="center"></el-table-column>
+                <el-table-column prop="pjWx" label="外协费" align="center"></el-table-column>
+                <el-table-column prop="pjPeople" label="人员费" align="center"></el-table-column>
+                <el-table-column prop="pjManage" label="管理费" align="center"></el-table-column>
+                <el-table-column prop="pjMoney" label="总金额" align="center"></el-table-column>
+
+                <el-table-column label="记账员审核状态" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.bzStatus ? statusData[(scope.row.bzStatus)].label : '待审核' }}
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="操作" align="center">
+
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="edit(scope.row)">修改</el-button>
+                        <el-button type="primary" size="mini" @click="handleApprove(scope.row)">审核通过</el-button>
+                        <el-button type="warning" size="mini" @click="handleReject(scope.row)">打回修改</el-button>
+                    </template>
+
+                </el-table-column>
+
+            </el-table>
+
+            <!-- 编辑弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="到账上传" :visible.sync="dialogFormVisible">
+
+                    <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="项目编号" prop="pjName">
+                                    <el-input v-model="formData.pjName" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="报账时间">
+                                    <el-date-picker v-model="formData.bzTime" :readonly="true" type="datetime"
+                                                    placeholder="选择时间"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="项目业务费" prop="pjYw">
+                                    <el-input v-model="formData.pjYw" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="仪器设备费" prop="pjSb">
+                                    <el-input v-model="formData.pjSb" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="业务接待费" prop="pjJd">
+                                    <el-input v-model="formData.pjJd" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="车辆使用费" prop="pjCar">
+                                    <el-input v-model="formData.pjCar" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="外协费" prop="pjWx">
+                                    <el-input v-model="formData.pjWx" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="人员费" prop="pjPeople">
+                                    <el-input v-model="formData.pjPeople" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="管理费" prop="pjManage">
+                                    <el-input v-model="formData.pjManage" disabled="true"/>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="总金额" prop="pjMoney">
+                                    <el-input v-model="formData.pjMoney"/>
+                                </el-form-item>
+                            </el-col>
+
+                        </el-row>
+
+
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleEdit()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<footer>
+    <p>版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</footer>
+</body>
+
+<!-- 引入组件库 -->
+
+<script src="../js/vue.js"></script>
+
+<script src="../plugins/elementui/index.js"></script>
+
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+
+<script src="../js/axios-0.18.0.js"></script>
+
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            dataList: [],//当前页要展示的列表数据
+            formData: {},//表单数据
+            dialogFormVisible: false,//控制表单是否可见
+            statusData: {
+                '0': {
+                    label: '待审核'
+                },
+                '1': {
+                    label: '审核通过'
+                },
+                '2': {
+                    label: '打回修改'
+                }
+            },
+            searchName: '',
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+        created() {
+            this.getAll();
+        },
+
+        methods: {
+
+            getAll() {
+                axios.get("/bk/getAllBz").then((res) => {
+                    this.dataList = res.data.data;
+                })
+            },
+
+            formatTime(row) {
+                return new Date(row.bzTime).toLocaleString('zh-CN', {hour12: false});
+            },
+
+            search() {
+                axios.get("/getBzByName", {
+                    params: {
+                        searchName: this.searchName
+                    }
+                }).then((res) => {
+                    this.dataList = res.data.data;
+                })
+            },
+
+            handleApprove(row) {
+                row.bzStatus = 1; //审核通过状态的值为1
+                this.handleUpdate(row);
+            },
+            handleReject(row) {
+                row.bzStatus = 2; //打回修改状态的值为2
+                this.handleUpdate(row);
+            },
+            handleUpdate(row) {
+                // 可以在此处使用axios等工具将更新后的数据发送到后端API进行处理
+                axios.post("/bk/bz/", row).then((res) => {
+                    if (res.data.code === 20031) {
+                        this.$message.success("修改成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("修改失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                })
+            },
+
+            //弹出编辑窗口
+            edit(row) {
+                axios.get("/bk/getById/" + row.id).then((res) => {
+                    // console.log(res.data.data);
+                    if (res.data.code === 20041) {
+                        //展示弹层，加载数据
+                        this.formData = res.data.data;
+                        this.dialogFormVisible = true;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+
+            },
+
+
+            //修改
+            handleEdit() {
+                axios.post("/bk/update", this.formData).then((res) => {
+                    if (res.data.code === 20031) {
+                        this.dialogFormVisible = false;
+                        this.$message.success("添加成功");
+                    } else if (res.data.code === 20030) {
+                        this.$message.error("添加失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+            },
+        }
+    })
+
+</script>
+
+</html>

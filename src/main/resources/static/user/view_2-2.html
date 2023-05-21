@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <!-- 页面meta -->
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>经费到账</title>
+
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+
+    <!-- 引入样式 -->
+
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 引入 layui.css -->
+    <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+    <link href="../css/self.css" rel="stylesheet">
+
+    <!--    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />-->
+
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+
+        <h1>经费到账</h1>
+
+    </div>
+
+    <div class="app-container">
+
+        <div class="box">
+
+            <div class="filter-container">
+
+                <el-input v-model="searchName" placeholder="请输入项目编号" style="width: 200px;"></el-input>
+                <el-button type="primary" @click="search">搜索</el-button>
+
+                <el-button type="primary" class="butT" @click="handleCreate()">上传</el-button>
+
+            </div>
+
+            <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+                <el-table-column label="序号" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="xmNumber" label="项目编号" align="center"></el-table-column>
+                <el-table-column prop="dzPicture" label="到帐单图片" align="center"></el-table-column>
+                <el-table-column prop="dzTime" label="到帐时间" :formatter="formatTime"></el-table-column>
+                <el-table-column prop="dzMoney" label="到帐金额" align="center"></el-table-column>
+                <el-table-column label="到帐单审核状态" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.dzStatus ? statusData[(scope.row.dzStatus)].label : '待审核' }}
+                    </template>
+                </el-table-column>
+
+            </el-table>
+
+            <!-- 新增标签弹层 -->
+
+            <div class="add-form">
+
+                <el-dialog title="到账上传" :visible.sync="dialogFormVisible">
+
+                    <el-form ref="dataAddForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="100px">
+
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="项目编号" prop="pjName">
+                                    <el-input v-model="formData.xmNumber"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="到帐金额" prop="pjName">
+                                    <el-input v-model="formData.dzMoney"/>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="12">
+                                <el-form-item label="到账时间">
+                                    <el-date-picker v-model="formData.dzTime" type="datetime"
+                                                    placeholder="选择时间"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+
+                        </el-row>
+                        <el-row>
+                            <el-col>
+                                <el-form-item label="上传图片">
+                                    <el-upload
+                                            action="/upload"
+                                            :on-preview="handlePreview"
+                                            :on-success="handleSuccess"
+                                            accept=".jpg,.jpeg,.png,.gif,.bmp"
+                                            :limit="1">
+
+                                        <el-button size="small" type="primary">选择文件</el-button>
+                                    </el-upload>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+
+                        <el-button @click="dialogFormVisible = false">取消</el-button>
+
+                        <el-button type="primary" @click="handleAdd()">确定</el-button>
+
+                    </div>
+
+                </el-dialog>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="footer1">
+    <p class="copyright">版权所有:湖北文理学院计算机工程学院&nbsp;周超</p>
+</div>
+</body>
+
+<!-- 引入组件库 -->
+
+<script src="../js/vue.js"></script>
+
+<script src="../plugins/elementui/index.js"></script>
+
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+
+<script src="../js/axios-0.18.0.js"></script>
+
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+
+
+<script>
+    var vue = new Vue({
+
+        el: '#app',
+        data: {
+            pagination: {},
+            dataList: [],//当前页要展示的列表数据
+            formData: {},//表单数据
+            dialogFormVisible: false,//控制表单是否可见
+            statusData: {
+                '0': {
+                    label: '待审核'
+                },
+                '1': {
+                    label: '审核通过'
+                },
+                '2': {
+                    label: '打回修改'
+                }
+            },
+            searchName: '',
+        },
+
+
+        //钩子函数，VUE对象初始化完成后自动执行
+          created() {
+              this.getAll();
+          },
+
+        methods: {
+            handlePreview(file) {
+                window.open(file.response.url)
+            },
+
+            handleSuccess(response, file, fileList) {
+                if (response.code === 0) {
+                    this.formData.dzPicture = response.url;
+                    this.$message.success("文件上传成功");
+                } else {
+                    this.$message.error("文件上传失败：" + response.msg);
+                }
+            },
+
+            formatTime(row) {
+                return new Date(row.dzTime).toLocaleString('zh-CN', {hour12: false});
+            },
+
+            //列表
+            getAll() {
+                axios.get("/getDzd").then((res) => {
+                    this.dataList = res.data.data;
+                });
+            },
+
+            search() {
+                axios.get("/getDzdByName", {
+                    params: {
+                        searchName: this.searchName
+                    }
+                }).then((res) => {
+                    this.dataList = res.data.data;
+                }).catch(() => {
+                    this.$message.error("查询失败，没有此编号的数据");
+                })
+            },
+
+            //弹出添加窗口
+            handleCreate() {
+                this.dialogFormVisible = true;
+                this.resetForm();
+            },
+
+            //重置表单
+            resetForm() {
+                this.formData = {};
+            },
+
+            //添加
+            handleAdd() {
+                axios.post("/insertJfdz", this.formData).then((res) => {
+                    if (res.data.code === 20011) {
+                        this.dialogFormVisible = false;
+                        this.$message.success("添加成功");
+                    } else if (res.data.code === 20010) {
+                        this.$message.error("添加失败");
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                }).finally(() => {
+                    this.getAll();
+                });
+            },
+        }
+    })
+
+</script>
+
+</html>

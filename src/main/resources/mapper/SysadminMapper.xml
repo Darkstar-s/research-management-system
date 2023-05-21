@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.SysadminMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.Sysadmin">
+            <id property="sysadminId" column="sysadmin_id" jdbcType="INTEGER"/>
+            <result property="sysadminPwd" column="sysadmin_pwd" jdbcType="VARCHAR"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        sysadmin_id,sysadmin_pwd,role
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_sysadmin
+        where  sysadmin_id = #{sysadminId,jdbcType=INTEGER} 
+    </select>
+    <select id="loginSysadmin" resultMap="BaseResultMap">
+        select *
+        from tb_sysadmin
+        where sysadmin_id = #{sysadminId,jdbcType=INTEGER}
+          and sysadmin_pwd = #{sysadminPwd,jdbcType=VARCHAR};
+    </select>
+    <select id="getAll" resultMap="BaseResultMap">
+        select *
+        from tb_bk;
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_sysadmin
+        where  sysadmin_id = #{sysadminId,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="sysadmin_id" keyProperty="sysadminId" parameterType="com.zc.domain.Sysadmin" useGeneratedKeys="true">
+        insert into tb_sysadmin
+        ( sysadmin_id,sysadmin_pwd,role
+        )
+        values (#{sysadminId,jdbcType=INTEGER},#{sysadminPwd,jdbcType=VARCHAR},#{role,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="sysadmin_id" keyProperty="sysadminId" parameterType="com.zc.domain.Sysadmin" useGeneratedKeys="true">
+        insert into tb_sysadmin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="sysadminId != null">sysadmin_id,</if>
+                <if test="sysadminPwd != null">sysadmin_pwd,</if>
+                <if test="role != null">role,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="sysadminId != null">#{sysadminId,jdbcType=INTEGER},</if>
+                <if test="sysadminPwd != null">#{sysadminPwd,jdbcType=VARCHAR},</if>
+                <if test="role != null">#{role,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.Sysadmin">
+        update tb_sysadmin
+        <set>
+                <if test="sysadminPwd != null">
+                    sysadmin_pwd = #{sysadminPwd,jdbcType=VARCHAR},
+                </if>
+                <if test="role != null">
+                    role = #{role,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   sysadmin_id = #{sysadminId,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.Sysadmin">
+        update tb_sysadmin
+        set 
+            sysadmin_pwd =  #{sysadminPwd,jdbcType=VARCHAR},
+            role =  #{role,jdbcType=VARCHAR}
+        where   sysadmin_id = #{sysadminId,jdbcType=INTEGER} 
+    </update>
+</mapper>

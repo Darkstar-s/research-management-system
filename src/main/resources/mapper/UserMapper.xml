@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.zc.domain.User">
+            <id property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="userSex" column="user_sex" jdbcType="CHAR"/>
+            <result property="userZc" column="user_zc" jdbcType="CHAR"/>
+            <result property="userXy" column="user_xy" jdbcType="CHAR"/>
+            <result property="userPhone" column="user_phone" jdbcType="VARCHAR"/>
+            <result property="userPwd" column="user_pwd" jdbcType="VARCHAR"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,user_name,user_sex,
+        user_zc,user_xy,user_phone,
+        user_pwd,role
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from tb_user
+        where  user_id = #{userId,jdbcType=INTEGER} 
+    </select>
+    <select id="selectByIdAndPassword" resultMap="BaseResultMap">
+        select *
+        from tb_user
+        where user_id = #{userId,jdbcType=INTEGER}
+          and user_pwd = #{userPwd,jdbcType=VARCHAR};
+    </select>
+    <select id="selectByUserName" resultMap="BaseResultMap">
+        select *
+        from tb_user
+        where user_name like CONCAT('%', #{userName,jdbcType=VARCHAR}, '%');
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select *
+        from tb_user;
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_user
+        where  user_id = #{userId,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="user_id" keyProperty="userId" parameterType="com.zc.domain.User" useGeneratedKeys="true">
+        insert into tb_user
+        ( user_id,user_name,user_sex
+        ,user_zc,user_xy,user_phone
+        ,user_pwd,role)
+        values (#{userId,jdbcType=INTEGER},#{userName,jdbcType=VARCHAR},#{userSex,jdbcType=CHAR}
+        ,#{userZc,jdbcType=CHAR},#{userXy,jdbcType=CHAR},#{userPhone,jdbcType=VARCHAR}
+        ,#{userPwd,jdbcType=VARCHAR},#{role,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="user_id" keyProperty="userId" parameterType="com.zc.domain.User" useGeneratedKeys="true">
+        insert into tb_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="userId != null">user_id,</if>
+                <if test="userName != null">user_name,</if>
+                <if test="userSex != null">user_sex,</if>
+                <if test="userZc != null">user_zc,</if>
+                <if test="userXy != null">user_xy,</if>
+                <if test="userPhone != null">user_phone,</if>
+                <if test="userPwd != null">user_pwd,</if>
+                <if test="role != null">role,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="userId != null">#{userId,jdbcType=INTEGER},</if>
+                <if test="userName != null">#{userName,jdbcType=VARCHAR},</if>
+                <if test="userSex != null">#{userSex,jdbcType=CHAR},</if>
+                <if test="userZc != null">#{userZc,jdbcType=CHAR},</if>
+                <if test="userXy != null">#{userXy,jdbcType=CHAR},</if>
+                <if test="userPhone != null">#{userPhone,jdbcType=VARCHAR},</if>
+                <if test="userPwd != null">#{userPwd,jdbcType=VARCHAR},</if>
+                <if test="role != null">#{role,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zc.domain.User">
+        update tb_user
+        <set>
+                <if test="userName != null">
+                    user_name = #{userName,jdbcType=VARCHAR},
+                </if>
+                <if test="userSex != null">
+                    user_sex = #{userSex,jdbcType=CHAR},
+                </if>
+                <if test="userZc != null">
+                    user_zc = #{userZc,jdbcType=CHAR},
+                </if>
+                <if test="userXy != null">
+                    user_xy = #{userXy,jdbcType=CHAR},
+                </if>
+                <if test="userPhone != null">
+                    user_phone = #{userPhone,jdbcType=VARCHAR},
+                </if>
+                <if test="userPwd != null">
+                    user_pwd = #{userPwd,jdbcType=VARCHAR},
+                </if>
+                <if test="role != null">
+                    role = #{role,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   user_id = #{userId,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zc.domain.User">
+        update tb_user
+        set 
+            user_name =  #{userName,jdbcType=VARCHAR},
+            user_sex =  #{userSex,jdbcType=CHAR},
+            user_zc =  #{userZc,jdbcType=CHAR},
+            user_xy =  #{userXy,jdbcType=CHAR},
+            user_phone =  #{userPhone,jdbcType=VARCHAR},
+            user_pwd =  #{userPwd,jdbcType=VARCHAR},
+            role =  #{role,jdbcType=VARCHAR}
+        where   user_id = #{userId,jdbcType=INTEGER} 
+    </update>
+</mapper>
